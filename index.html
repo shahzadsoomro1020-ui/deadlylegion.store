@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Mobile viewport & responsive layout meta tag -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DEADLY LEGION STORE — PUBG Mobile UC Top-Up, Order Slips &amp; Reviews</title>
+
+  <!-- Inter font for clean storefront typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Obsidian, Gold & Emerald Design Tokens -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            obsidian: {
+              950: '#08090d',
+              900: '#0f1219',
+              800: '#161b26',
+              700: '#1f2636',
+            },
+            gold: {
+              300: '#fcd34d',
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+            },
+            emerald: {
+              300: '#6ee7b7',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    html, body {
+      background-color: #08090d;
+      color: #f8fafc;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+    .glass-header {
+      background: rgba(8, 9, 13, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .package-card {
+      background: linear-gradient(180deg, #0f1219 0%, #0a0d14 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .package-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(251, 191, 36, 0.55);
+      box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.85);
+    }
+    .package-card.selected {
+      border-color: #fbbf24;
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.14) 0%, rgba(16, 185, 129, 0.06) 100%);
+      box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.45);
+    }
+    .payment-card {
+      background: #0b0e15;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+    .payment-card:hover {
+      border-color: rgba(16, 185, 129, 0.45);
+      background: #111622;
+    }
+    .payment-card.active {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.12);
+      box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.4);
+    }
+    .proof-card {
+      background: linear-gradient(180deg, #0f1219 0%, #0a0d14 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .proof-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(251, 191, 36, 0.45);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-obsidian-950 text-slate-100 antialiased selection:bg-gold-500/30 selection:text-gold-300">
+
+  <!-- TOP STICKY HEADER -->
+  <header class="sticky top-0 z-40 glass-header border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col gap-3">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+        <!-- Brand Identity -->
+        <a href="#top" onclick="switchView('storefront'); return false;" class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-obsidian-950 font-black text-sm shadow-lg shadow-gold-500/20 shrink-0">
+            DL
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold tracking-tight text-sm sm:text-base text-white truncate">DEADLY LEGION STORE</span>
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shrink-0">
+                OFFICIAL UID
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-400 truncate">deadlylegion.store • Midasbuy-Style PUBG Mobile Top-Up &amp; Proofs</p>
+          </div>
+        </a>
+
+        <!-- Search + View Switcher -->
+        <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+          <div class="relative flex-1 sm:w-56">
+            <input
+              type="text"
+              id="globalSearchInput"
+              oninput="handleGlobalSearch()"
+              placeholder="Search UC, Prime, #DL..."
+              aria-label="Search packages, reviews, or proofs"
+              class="w-full bg-obsidian-900 border border-white/10 focus:border-gold-400 rounded-xl pl-3.5 pr-8 py-2 text-xs sm:text-sm text-white placeholder-slate-500 outline-none transition"
+            />
+            <button
+              type="button"
+              id="clearGlobalSearchBtn"
+              onclick="clearGlobalSearch()"
+              aria-label="Clear search"
+              class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white cursor-pointer"
+            >
+              ✕
+            </button>
+          </div>
+
+          <nav aria-label="Primary Views" class="flex items-center gap-1 bg-obsidian-900 p-1 rounded-xl border border-white/10 overflow-x-auto max-w-full">
+            <button
+              type="button"
+              data-nav-view="storefront"
+              onclick="switchView('storefront')"
+              class="px-3 py-1.5 rounded-lg text-xs font-extrabold transition cursor-pointer shrink-0"
+            >
+              Storefront
+            </button>
+            <button
+              type="button"
+              data-nav-view="orders"
+              onclick="switchView('orders')"
+              class="px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shrink-0"
+            >
+              My Orders <span id="ordersCountBadge" class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-gold-500/20 text-gold-300">0</span>
+            </button>
+            <button
+              type="button"
+              data-nav-view="reviews"
+              onclick="switchView('reviews')"
+              class="px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shrink-0"
+            >
+              Reviews &amp; Proofs <span id="reviewsBadge" class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300">50k+</span>
+            </button>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Category Filter Tabs Bar -->
+      <div id="categoryTabsRow" class="flex items-center justify-between gap-2 border-t border-white/5 pt-2.5 overflow-x-auto">
+        <div id="categoryTabs" class="flex items-center gap-2 shrink-0"></div>
+        <div class="hidden md:flex items-center gap-3 text-[11px] text-slate-400 shrink-0">
+          <span>WhatsApp: <strong class="text-emerald-400">03102918982</strong></span>
+          <span>•</span>
+          <span><strong class="text-emerald-400">03487280557</strong></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="top" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
+
+    <!-- =====================================================================
+         VIEW 1: STOREFRONT (PACKAGES + DIRECT CHECKOUT + REVIEWS SPOTLIGHT)
+    ====================================================================== -->
+    <div id="view-storefront" class="space-y-8">
+
+      <!-- Packages Grid Section -->
+      <section class="bg-obsidian-900 border border-white/10 rounded-2xl p-4 sm:p-6 space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+          <div class="space-y-1">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-gold-500/10 text-gold-300 border border-gold-500/25">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              PKR Direct UID Top-Up • Instant / 1–30 Min Delivery
+            </div>
+            <h1 class="text-xl sm:text-3xl font-extrabold tracking-tight text-white">
+              PUBG Mobile UC &amp; Prime Plus Packs
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-400">
+              Select any package to open the direct checkout panel, scan the QR code or select a wallet/bank, and generate your Order Slip.
+            </p>
+          </div>
+        </div>
+
+        <div id="packagesGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4"></div>
+      </section>
+
+      <!-- DIRECT CHECKOUT PANEL (Reveals/Focuses When a Package is Selected) -->
+      <section
+        id="directCheckoutPanel"
+        aria-label="Direct Package Checkout"
+        class="bg-obsidian-900 border border-gold-500/35 rounded-2xl p-4 sm:p-6 lg:p-7 space-y-6 shadow-2xl shadow-black/50"
+      >
+        <!-- Selected Package Summary Bar -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-white/10 pb-4">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-gold-400 via-gold-500 to-emerald-500 flex items-center justify-center text-obsidian-950 font-black text-sm shrink-0">
+              DL
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span id="checkoutCategoryPill" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-gold-500/15 text-gold-300 border border-gold-500/30 uppercase">
+                  UC PACKS
+                </span>
+                <span id="checkoutDeliveryNote" class="text-xs font-semibold text-emerald-400">
+                  Direct UID Recharge • 1–5 Min Delivery
+                </span>
+              </div>
+              <h2 id="checkoutPackageTitle" class="text-lg sm:text-2xl font-extrabold text-white truncate mt-0.5">
+                60 UC — 280 PKR
+              </h2>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="px-3.5 py-2 rounded-xl bg-obsidian-950 border border-white/10 text-xs sm:text-sm font-extrabold text-gold-400">
+              Amount: <span id="checkoutAmountText">280 PKR</span>
+            </span>
+            <button
+              type="button"
+              onclick="copyCheckoutOrderSummary()"
+              class="px-3.5 py-2 rounded-xl text-xs font-extrabold bg-obsidian-800 hover:bg-obsidian-700 text-emerald-300 border border-emerald-500/30 transition cursor-pointer"
+            >
+              Copy Order Summary
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+          <!-- Left Column (7 cols): QR Code Card + 3-Step Guide + Wallet/Bank Methods -->
+          <div class="lg:col-span-7 bg-obsidian-950 border border-emerald-500/35 rounded-2xl p-4 sm:p-5 space-y-5">
+            <div class="flex items-center justify-between gap-2 border-b border-white/10 pb-3">
+              <h3 class="text-sm sm:text-base font-extrabold text-white">
+                Payment Method &amp; QR Scan
+              </h3>
+              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                All Wallets &amp; Raast
+              </span>
+            </div>
+
+            <!-- Payment Methods List (QR Featured Top + Pakistani Wallets & Bank/Raast) -->
+            <div id="paymentMethodsList" class="space-y-2.5"></div>
+
+            <!-- QR Code Scan Card + Download QR + 3-Step Instructions -->
+            <div class="bg-gradient-to-br from-obsidian-900 via-obsidian-900 to-emerald-950/25 border border-gold-500/35 rounded-2xl p-4 sm:p-5 space-y-4">
+              <div class="flex flex-col sm:flex-row items-center gap-5">
+                <div class="shrink-0 flex flex-col items-center gap-2.5">
+                  <div class="w-40 h-40 sm:w-44 sm:h-44 rounded-2xl bg-white p-2.5 shadow-xl shadow-black/70 border-2 border-gold-400 flex items-center justify-center overflow-hidden">
+                    <canvas
+                      id="storePaymentQrCanvas"
+                      aria-label="DEADLY LEGION STORE Payment QR Code"
+                      class="w-full h-full object-contain rounded-lg"
+                    ></canvas>
+                  </div>
+                  <button
+                    type="button"
+                    onclick="downloadStoreQr()"
+                    class="w-full py-2 px-3 rounded-xl text-xs font-extrabold bg-emerald-500 hover:bg-emerald-400 text-obsidian-950 shadow-md shadow-emerald-500/20 transition cursor-pointer"
+                  >
+                    ⬇ Download QR
+                  </button>
+                </div>
+
+                <div class="flex-1 space-y-3 min-w-0 w-full">
+                  <div class="text-xs font-extrabold uppercase tracking-wider text-gold-400">
+                    QR Code Scan (All Wallets / Raast)
+                  </div>
+                  <p class="text-xs text-slate-200 leading-relaxed">
+                    Scan with <strong class="text-emerald-300">JazzCash, EasyPaisa, SadaPay, NayaPay &amp; Raast</strong> and send <strong id="qrPaymentAmountText" class="text-gold-300">280 PKR</strong>.
+                  </p>
+
+                  <!-- 3-Step Payment Instructions -->
+                  <ol class="space-y-1.5 text-xs text-slate-300 bg-obsidian-950/90 border border-white/10 rounded-xl p-3">
+                    <li><strong class="text-gold-300">1.</strong> Scan the QR code above or tap <strong>Download QR</strong> using your wallet or banking app.</li>
+                    <li><strong class="text-gold-300">2.</strong> Send <strong id="stepAmountText" class="text-white">280 PKR</strong> and save your payment screenshot (SS).</li>
+                    <li><strong class="text-gold-300">3.</strong> Enter your PUBG UID, UID Name &amp; WhatsApp, attach SS, and generate your Order Slip.</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column (5 cols): Player Inputs + Payment Screenshot Upload + Generate Order Slip -->
+          <div class="lg:col-span-5 bg-obsidian-950 border border-white/10 rounded-2xl p-4 sm:p-5 space-y-4">
+            <h3 class="text-sm sm:text-base font-extrabold text-white border-b border-white/10 pb-3">
+              Player Details &amp; Payment Proof (SS)
+            </h3>
+
+            <!-- Numeric PUBG UID -->
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label for="checkoutPubgUid" class="text-xs font-semibold text-slate-300">
+                  PUBG UID <span class="text-rose-400">*</span>
+                </label>
+                <span id="uidStatusHint" class="text-[11px] font-semibold text-slate-400">6–15 digits</span>
+              </div>
+              <input
+                type="text"
+                id="checkoutPubgUid"
+                inputmode="numeric"
+                oninput="validatePubgUidField()"
+                placeholder="e.g. 5291847362"
+                class="w-full bg-obsidian-900 border border-white/15 focus:border-gold-400 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white placeholder-slate-500 outline-none transition"
+              />
+            </div>
+
+            <!-- PUBG UID Name -->
+            <div>
+              <label for="checkoutUidName" class="block text-xs font-semibold text-slate-300 mb-1">
+                PUBG UID Name <span class="text-rose-400">*</span>
+              </label>
+              <input
+                type="text"
+                id="checkoutUidName"
+                placeholder="Enter in-game character name"
+                class="w-full bg-obsidian-900 border border-white/15 focus:border-gold-400 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition"
+              />
+            </div>
+
+            <!-- WhatsApp / Contact Number -->
+            <div>
+              <label for="checkoutWhatsapp" class="block text-xs font-semibold text-slate-300 mb-1">
+                WhatsApp / Contact Number <span class="text-rose-400">*</span>
+              </label>
+              <input
+                type="tel"
+                id="checkoutWhatsapp"
+                placeholder="e.g. 03001234567"
+                class="w-full bg-obsidian-900 border border-white/15 focus:border-emerald-400 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition"
+              />
+            </div>
+
+            <!-- Payment Screenshot (SS) Drag-and-Drop / File Upload Box -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">
+                Payment Screenshot (SS)
+              </label>
+              <div
+                id="checkoutSsDropBox"
+                ondragover="handleCheckoutSsDragOver(event)"
+                ondragleave="handleCheckoutSsDragLeave(event)"
+                ondrop="handleCheckoutSsDrop(event)"
+                class="rounded-xl border border-dashed border-emerald-500/45 bg-obsidian-900/90 hover:bg-obsidian-900 p-3.5 text-center transition"
+              >
+                <input
+                  type="file"
+                  id="checkoutSsFileInput"
+                  accept="image/*"
+                  onchange="handleCheckoutSsFileChange(event)"
+                  class="hidden"
+                />
+
+                <div id="checkoutSsEmpty" class="space-y-2">
+                  <p class="text-xs text-slate-300">
+                    Drag &amp; drop screenshot here or <strong class="text-emerald-400">upload image</strong>
+                  </p>
+                  <button
+                    type="button"
+                    onclick="document.getElementById('checkoutSsFileInput').click()"
+                    class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-obsidian-800 hover:bg-obsidian-700 text-gold-300 border border-white/10 transition cursor-pointer"
+                  >
+                    Choose Screenshot
+                  </button>
+                </div>
+
+                <div id="checkoutSsPreviewWrap" class="hidden space-y-2">
+                  <img
+                    id="checkoutSsPreviewImg"
+                    src=""
+                    alt="Payment Screenshot Preview"
+                    class="max-h-36 mx-auto rounded-lg border border-white/15 object-contain bg-obsidian-950"
+                  />
+                  <div class="flex items-center justify-between gap-2 text-[11px] text-slate-300 px-1">
+                    <span id="checkoutSsFileLabel" class="truncate text-emerald-300 font-semibold">screenshot.png</span>
+                    <button
+                      type="button"
+                      onclick="clearCheckoutSs()"
+                      class="text-rose-400 hover:text-rose-300 font-bold shrink-0 cursor-pointer"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Validation Alert -->
+            <div id="checkoutValidationBox" class="hidden rounded-xl bg-rose-500/15 border border-rose-500/35 px-3.5 py-2.5 text-xs font-semibold text-rose-300"></div>
+
+            <!-- Generate Instant Order Slip Button -->
+            <button
+              type="button"
+              onclick="generateInstantOrderSlip()"
+              class="w-full py-3 px-4 rounded-xl
